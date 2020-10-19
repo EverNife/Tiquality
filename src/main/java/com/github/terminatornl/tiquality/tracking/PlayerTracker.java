@@ -319,6 +319,16 @@ public class PlayerTracker extends TrackerBase {
     }
 
     /**
+     * Gets the ids of other Trackers this Tracjer
+     * is sharing with
+     *
+     * @return all shared trackers's ids
+     */
+    public Set<Long> getSharedTo() {
+        return sharedTo;
+    }
+
+    /**
      * Debugging method. Do not use in production environments.
      *
      * @return description
