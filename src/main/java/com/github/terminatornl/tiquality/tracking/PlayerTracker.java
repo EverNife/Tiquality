@@ -329,6 +329,24 @@ public class PlayerTracker extends TrackerBase {
     }
 
     /**
+     * Gets the GameProfile from this PlayerTracker
+     *
+     * @return player's GameProfile
+     */
+    public GameProfile getProfile() {
+        return profile;
+    }
+
+    /**
+     * Get if this tracker is notifying its user
+     *
+     * @return nofity state
+     */
+    public boolean isNotifyUser() {
+        return notifyUser;
+    }
+
+    /**
      * Debugging method. Do not use in production environments.
      *
      * @return description
