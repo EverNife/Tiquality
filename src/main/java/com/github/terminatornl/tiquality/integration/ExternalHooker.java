@@ -1,16 +1,16 @@
 package com.github.terminatornl.tiquality.integration;
 
 import com.github.terminatornl.tiquality.Tiquality;
+import com.github.terminatornl.tiquality.integration.bukkit.BukkitToForgeEventHandler;
 import com.github.terminatornl.tiquality.integration.ftbutilities.FTBUtilitiesHook;
 import com.github.terminatornl.tiquality.integration.griefdefender.GriefDefenderHook;
 import com.github.terminatornl.tiquality.integration.griefprevention.GriefPreventionHook;
 import com.griefdefender.api.GriefDefender;
 import me.ryanhamshire.griefprevention.GriefPrevention;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.ModContainer;
 
 import java.util.HashSet;
-import java.util.Map;
 
 public class ExternalHooker {
 
@@ -54,4 +54,16 @@ public class ExternalHooker {
             Tiquality.LOGGER.info("Done.");
         }
     }
+
+    public static void initBukkitHook() {
+        try {
+            Class.forName("org.bukkit.Bukkit");
+            Tiquality.LOGGER.info("Allowing bukkit plugins to Hook on Tiquality...");
+            MinecraftForge.EVENT_BUS.register(BukkitToForgeEventHandler.INSTANCE);
+        }catch (ClassNotFoundException ignored){
+
+        }
+    }
+
+
 }
