@@ -124,6 +124,7 @@ dependencies {
 
     compileOnly 'com.github.bloodmc:GriefDefenderAPI:-SNAPSHOT'
 
+    compileOnly 'com.github.evernife:GriefPreventionPlus:13.4' //For some weird reason, this is not working :/
 
     /*
         FTB Utilities
