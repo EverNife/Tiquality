@@ -7,6 +7,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -42,6 +44,17 @@ public class ForgeData {
         GameProfile profile = SERVER.getPlayerProfileCache().getProfileByUUID(uuid);
         if (profile != null) {
             return profile;
+        }
+
+        /*
+         *  We try to let bukkit get it for us.
+         */
+        if (MixinConfigPlugin.bukkitPresent) {
+            profile = ((CraftPlayer)Bukkit.getPlayer(uuid)).getHandle().getProfile();
+            if (profile != null){
+                SERVER.getPlayerProfileCache().addEntry(profile);
+                return profile;
+            }
         }
 
         /*

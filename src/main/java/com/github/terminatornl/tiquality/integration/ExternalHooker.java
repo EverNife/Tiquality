@@ -5,6 +5,7 @@ import com.github.terminatornl.tiquality.integration.bukkit.BukkitToForgeEventHa
 import com.github.terminatornl.tiquality.integration.ftbutilities.FTBUtilitiesHook;
 import com.github.terminatornl.tiquality.integration.griefdefender.GriefDefenderHook;
 import com.github.terminatornl.tiquality.integration.griefprevention.GriefPreventionHook;
+import com.github.terminatornl.tiquality.mixinhelper.MixinConfigPlugin;
 import com.griefdefender.api.GriefDefender;
 import me.ryanhamshire.griefprevention.GriefPrevention;
 import net.minecraftforge.common.MinecraftForge;
@@ -58,6 +59,7 @@ public class ExternalHooker {
     public static void initBukkitHook() {
         try {
             Class.forName("org.bukkit.Bukkit");
+            MixinConfigPlugin.bukkitPresent = true;
             Tiquality.LOGGER.info("Allowing bukkit plugins to Hook on Tiquality...");
             MinecraftForge.EVENT_BUS.register(BukkitToForgeEventHandler.INSTANCE);
         }catch (ClassNotFoundException ignored){

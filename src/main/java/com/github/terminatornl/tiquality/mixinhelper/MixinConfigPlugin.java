@@ -27,6 +27,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
     public static final Logger LOGGER = LogManager.getLogger("Tiquality-Boot");
     public static boolean spongePresent = false;
+    public static boolean bukkitPresent = false; //Better check only after all initialization
     public static String spongeForgeVersion = null;
     public static boolean hasClientClasses = true;
     public static boolean MIXIN_CONFIG_PLUGIN_WAS_LOADED = false;
