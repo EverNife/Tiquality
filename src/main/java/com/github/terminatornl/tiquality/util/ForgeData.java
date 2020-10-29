@@ -7,8 +7,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -16,6 +14,7 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.function.Function;
 
 /**
  * This is a mess. There should be something easier... Oh well.
@@ -27,6 +26,8 @@ public class ForgeData {
     public static final TreeSet<UUID> WEIRD_GAME_PROFILES = new TreeSet<>();
 
     public static final MinecraftServer SERVER = FMLCommonHandler.instance().getMinecraftServerInstance();
+
+    public static Function<UUID, GameProfile> CUSTOM_GAMEPROFILER_IMPORTER;
 
     /**
      * Gets the profile, but can reach out and contact mojang's servers if it failed.
@@ -47,21 +48,26 @@ public class ForgeData {
         }
 
         /*
-         *  We try to let bukkit get it for us.
-         */
-        if (MixinConfigPlugin.bukkitPresent) {
-            profile = ((CraftPlayer)Bukkit.getPlayer(uuid)).getHandle().getProfile();
-            if (profile != null){
-                SERVER.getPlayerProfileCache().addEntry(profile);
-                return profile;
-            }
-        }
-
-        /*
          * Our own cache, for funky game profiles.
          */
         if (WEIRD_GAME_PROFILES.contains(uuid)) {
             return GAME_PROFILE_NOBODY;
+        }
+
+        if (CUSTOM_GAMEPROFILER_IMPORTER != null) {
+            /*
+             *  We try to let bukkit get it for us.
+             */
+            profile = CUSTOM_GAMEPROFILER_IMPORTER.apply(uuid);
+            if (profile != null){
+                try {
+                    SERVER.getPlayerProfileCache().addEntry(profile);
+                }catch (Exception e){
+                    Tiquality.LOGGER.warn("Fail adding GameProfile from: " + profile.toString());
+                    e.printStackTrace();
+                }
+                return profile;
+            }
         }
 
         Tiquality.LOGGER.warn("Player profile was not found in cache!");

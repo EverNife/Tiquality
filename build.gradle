@@ -72,9 +72,9 @@ if(project.gradle.startParameter.taskNames.contains("build")) {
 }
 
 String spongeForgeVersion = '1.12.2-2838-7.1.11-RC4007'
-String forgeVersion = '1.12.2-14.23.5.2847'
+String forgeVersion = '1.12.2-14.23.5.2838'
 
-version = "1.12.2-GAMMA-1.8.1" + "-" + GetCommitCount()
+version = "1.12.2-GAMMA-1.8.1" + "-evernife-V1"
 group = "com.github.terminatornl"
 archivesBaseName = "Tiquality-"+ (isObfuscated ? "" : "DEOBF-") + buildType
 
@@ -86,6 +86,11 @@ compileJava {
     options.fork = true
     options.forkOptions.executable = 'javac'
     options.compilerArgs << "-XDignore.symbol.file"
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
 }
 
 minecraft {
@@ -124,17 +129,17 @@ dependencies {
 
     compileOnly 'com.github.bloodmc:GriefDefenderAPI:-SNAPSHOT'
 
-    compileOnly 'com.github.evernife:GriefPreventionPlus:13.4' //For some weird reason, this is not working :/
 
     /*
         FTB Utilities
      */
     compileOnly 'ftb-utilities:FTBUtilities:5.3.0.52'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     /*
         FTB Library
      */
-    compileOnly 'ftblib:FTBLib:5.3.0.56'
+    //compileOnly 'ftblib:FTBLib:5.3.0.56'
 
     if(isFat) {
         embed('org.spongepowered:mixin:0.8-SNAPSHOT') {

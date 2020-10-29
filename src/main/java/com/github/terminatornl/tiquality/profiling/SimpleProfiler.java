@@ -31,12 +31,12 @@ public class SimpleProfiler implements Runnable {
         Iterator<Map.Entry<ReferencedTickable.ReferenceId, TickTime>> referenceIterator = times.entrySet().iterator();
         SortedSet<AnalyzedComponent> finishedAnalyzers = Collections.synchronizedSortedSet(new TreeSet<>());
 
-        ThreadPoolExecutor threadPool = new ThreadPoolExecutor(16, 32, 10L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
+        ThreadPoolExecutor threadPool = new ThreadPoolExecutor(16, 64, 500L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 
         Tiquality.SCHEDULER.scheduleWait(new Runnable() {
             @Override
             public void run() {
-                monitor.progressUpdate(new TextComponentString("Retrieving results in main thread..."));
+                monitor.progressUpdate(new TextComponentString("Retornando resultados para Thread Principal..."));
                 while (referenceIterator.hasNext()) {
                     Map.Entry<ReferencedTickable.ReferenceId, TickTime> entry = referenceIterator.next();
                     referenceIterator.remove(); /* Lots of data can be in here, Free up some sweet sweet RAM. */
@@ -75,14 +75,14 @@ public class SimpleProfiler implements Runnable {
             } else {
                 long remainder = durationInMs % 5000;
                 Thread.sleep(remainder);
-                printer.progressUpdate(new TextComponentString("Profiler finishes in " + TextFormatting.WHITE + ((durationInMs - remainder) / 1000) + TextFormatting.GRAY + " seconds..."));
+                printer.progressUpdate(new TextComponentString("O perfilamento termina em " + TextFormatting.WHITE + ((durationInMs - remainder) / 1000) + TextFormatting.GRAY + " segundos..."));
                 long fiveSecondSteps = (durationInMs - remainder) / 5000;
                 for (int i = 0; i < fiveSecondSteps; i++) {
                     Thread.sleep(5000);
                     long timeElapsed = (i + 1) * 5000;
                     long secondsLeft = (durationInMs - remainder - timeElapsed) / 1000;
                     if (secondsLeft > 0) {
-                        printer.progressUpdate(new TextComponentString("Profiler finishes in " + TextFormatting.WHITE + secondsLeft + TextFormatting.GRAY + " seconds..."));
+                        printer.progressUpdate(new TextComponentString("O perfilamento termina em " + TextFormatting.WHITE + secondsLeft + TextFormatting.GRAY + " segundos..."));
                     }
                 }
             }
@@ -101,7 +101,7 @@ public class SimpleProfiler implements Runnable {
             return;
         }
 
-        printer.progressUpdate(new TextComponentString("Profiling complete. Analyzing results synchronously..."));
+        //printer.progressUpdate(new TextComponentString("Profiling complete. Analyzing results synchronously..."));
 
         SortedSet<AnalyzedComponent> components;
         try {
@@ -110,11 +110,11 @@ public class SimpleProfiler implements Runnable {
             printer.progressUpdate(new TextComponentString(TextFormatting.RED + "Interrupted!"));
             return;
         }
-        printer.progressUpdate(new TextComponentString("Generating report asynchronously..."));
+        printer.progressUpdate(new TextComponentString("Gerando relatório..."));
 
 
         ProfileReport report = new ProfileReport(startTimeNanos, endTimeNanos, logger, tracker.getInfo(), components);
-        printer.progressUpdate(new TextComponentString("Done!"));
+        printer.progressUpdate(new TextComponentString("Relatório Completo!"));
         printer.report(report);
     }
 
