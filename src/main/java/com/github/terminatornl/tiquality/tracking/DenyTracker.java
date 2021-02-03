@@ -141,6 +141,17 @@ public class DenyTracker implements Tracker {
     /**
      * Void the tick
      *
+     * @param tileEntity t
+     * @param runnable r
+     */
+    @Override
+    public void tickRunnable(TiqualitySimpleTickable tileEntity, Runnable runnable) {
+
+    }
+
+    /**
+     * Void the tick
+     *
      * @param block b
      * @param world w
      * @param pos   p

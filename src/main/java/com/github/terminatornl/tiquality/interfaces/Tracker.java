@@ -110,6 +110,8 @@ public interface Tracker {
 
     void tickEntity(TiqualityEntity entity);
 
+    void tickRunnable(TiqualitySimpleTickable tileEntity, Runnable runnable);
+
     void doBlockTick(Block block, World world, BlockPos pos, IBlockState state, Random rand);
 
     void doRandomBlockTick(Block block, World world, BlockPos pos, IBlockState state, Random rand);

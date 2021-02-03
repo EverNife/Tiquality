@@ -266,6 +266,28 @@ public abstract class TrackerBase implements Tracker {
     }
 
     /**
+     * Ticks the entity with a custom tickFunction, and optionally profiles it
+     *
+     * @param tileEntity the Entity to tick
+     * @param runnable the Runnable to be executed
+     */
+    @Override
+    public void tickRunnable(TiqualitySimpleTickable tileEntity, Runnable runnable) {
+        /* Even if we do not have any more time, on tickRunnable the tick is always forced!*/
+        if (isProfiling) {
+            long start = System.nanoTime();
+            runnable.run();
+            long elapsed = System.nanoTime() - start;
+            tickLogger.addNanosAndIncrementCalls(tileEntity.getId(), elapsed);
+            consume(elapsed);
+        } else {
+            long start = System.nanoTime();
+            runnable.run();
+            consume(System.nanoTime() - start);
+        }
+    }
+
+    /**
      * Performs block tick if it can, if not, it will queue it for later.
      *
      * @param block the block

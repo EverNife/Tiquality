@@ -236,6 +236,25 @@ public class ForcedTracker implements Tracker {
     }
 
     /**
+     * Ticks the entity with a custom tickFunction, and optionally profiles it
+     *
+     * @param entity the Entity to tick
+     * @param runnable the Runnable to be executed
+     */
+    @Override
+    public void tickRunnable(TiqualitySimpleTickable tileEntity, Runnable runnable) {
+        if (isProfiling) {
+            long start = System.nanoTime();
+            runnable.run();
+            long elapsed = System.nanoTime() - start;
+            tickLogger.addNanosAndIncrementCalls(tileEntity.getId(), elapsed);
+        } else {
+            runnable.run();
+        }
+    }
+
+
+    /**
      * Since we're a TrackerBase without an owner, we assign 0 time to it's tick time.
      *
      * @param cache The current online player cache
