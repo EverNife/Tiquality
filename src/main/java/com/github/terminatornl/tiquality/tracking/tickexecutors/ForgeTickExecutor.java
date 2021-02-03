@@ -1,9 +1,11 @@
 package com.github.terminatornl.tiquality.tracking.tickexecutors;
 
+import com.github.terminatornl.tiquality.Tiquality;
 import com.github.terminatornl.tiquality.interfaces.TickExecutor;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -27,7 +29,20 @@ public class ForgeTickExecutor implements TickExecutor {
 
     @Override
     public void onTileEntityTick(ITickable tickable) {
-        tickable.update();
+        try {
+            tickable.update();
+        }catch (IllegalArgumentException illegalArgumentException){
+            if (illegalArgumentException.getMessage().startsWith("Cannot get property PropertyEnum{")){
+                if (tickable instanceof TileEntity){
+                    TileEntity tileEntity = (TileEntity) tickable;
+                    tileEntity.getWorld().setBlockToAir(tileEntity.getPos());
+                    Tiquality.LOGGER.warn("We got a PropertyEnum{} Exeption at " + tileEntity.getPos().toString());
+                    illegalArgumentException.printStackTrace();
+                    return;
+                }
+            }
+            throw illegalArgumentException;
+        }
     }
 
     @Override
