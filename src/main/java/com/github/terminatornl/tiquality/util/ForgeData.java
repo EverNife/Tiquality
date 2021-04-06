@@ -1,6 +1,7 @@
 package com.github.terminatornl.tiquality.util;
 
 import com.github.terminatornl.tiquality.Tiquality;
+import com.github.terminatornl.tiquality.integration.bukkit.CustomGameProfilerProvider;
 import com.github.terminatornl.tiquality.mixinhelper.MixinConfigPlugin;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.server.MinecraftServer;
@@ -27,7 +28,7 @@ public class ForgeData {
 
     public static final MinecraftServer SERVER = FMLCommonHandler.instance().getMinecraftServerInstance();
 
-    public static Function<UUID, GameProfile> CUSTOM_GAMEPROFILER_IMPORTER;
+    public static CustomGameProfilerProvider CUSTOM_GAMEPROFILER_PROVIDER;
 
     /**
      * Gets the profile, but can reach out and contact mojang's servers if it failed.
@@ -54,11 +55,11 @@ public class ForgeData {
             return GAME_PROFILE_NOBODY;
         }
 
-        if (CUSTOM_GAMEPROFILER_IMPORTER != null) {
+        if (CUSTOM_GAMEPROFILER_PROVIDER != null) {
             /*
              *  We try to let bukkit get it for us.
              */
-            profile = CUSTOM_GAMEPROFILER_IMPORTER.apply(uuid);
+            profile = (GameProfile) CUSTOM_GAMEPROFILER_PROVIDER.provideGameProfile(uuid);
             if (profile != null){
                 try {
                     SERVER.getPlayerProfileCache().addEntry(profile);

@@ -1,6 +1,6 @@
 package com.github.terminatornl.tiquality.api;
 
-public class Location<K extends Comparable, V extends Comparable> {
+public class Location<K extends Comparable, V> {
 
     private final K world;
     private final V pos;

@@ -16,6 +16,8 @@ import com.github.terminatornl.tiquality.util.SynchronizedAction;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -493,4 +495,10 @@ public abstract class TrackerBase implements Tracker {
         }
     }
 
+    @Nonnull
+    @Override
+    public TextComponentString getInfo() {
+        return new TextComponentString(TextFormatting.LIGHT_PURPLE + getIdentifier());
+
+    }
 }

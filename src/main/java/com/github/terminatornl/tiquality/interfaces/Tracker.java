@@ -142,6 +142,10 @@ public interface Tracker {
     @Nonnull
     TextComponentString getInfo();
 
+    default String getInfoString(){
+        return getInfo().getText();
+    }
+
     @Nonnull
     String getIdentifier();
 

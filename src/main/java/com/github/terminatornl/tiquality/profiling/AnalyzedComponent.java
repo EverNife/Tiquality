@@ -1,6 +1,8 @@
 package com.github.terminatornl.tiquality.profiling;
 
 import com.github.terminatornl.tiquality.api.Location;
+import com.github.terminatornl.tiquality.profiling.interfaces.IAnalyzedComponent;
+import com.github.terminatornl.tiquality.profiling.interfaces.IBlockPos;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -16,7 +18,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Set;
 
-public class AnalyzedComponent implements Comparable<AnalyzedComponent>, IMessage {
+public class AnalyzedComponent implements Comparable<AnalyzedComponent>, IMessage, IAnalyzedComponent {
 
     private String clazz;
     private TickTime times;
@@ -66,8 +68,14 @@ public class AnalyzedComponent implements Comparable<AnalyzedComponent>, IMessag
         return resourceLocation;
     }
 
-    public Location<Integer, BlockPos> getLastKnownLocation() {
-        return lastKnownLocation;
+    @Override
+    public String getResourceLocationString() {
+        return resourceLocation != null ? resourceLocation.toString() : null;
+    }
+
+    @Override
+    public Location<Integer, IBlockPos> getLastKnownLocation() {
+        return (Location<Integer, IBlockPos>)(Object)lastKnownLocation;
     }
 
     @SuppressWarnings("IfMayBeConditional") //Confusing

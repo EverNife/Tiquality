@@ -1,11 +1,12 @@
 package com.github.terminatornl.tiquality.profiling;
 
+import com.github.terminatornl.tiquality.profiling.interfaces.ITickTime;
 import io.netty.buffer.ByteBuf;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 import javax.annotation.Nonnull;
 
-public class TickTime implements IMessage, Comparable<TickTime> {
+public class TickTime implements IMessage, ITickTime<TickTime> {
 
     private long nanosConsumed = 0L;
     private int calls = 0;
