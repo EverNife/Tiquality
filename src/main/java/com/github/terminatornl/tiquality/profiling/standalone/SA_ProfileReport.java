@@ -1,5 +1,6 @@
 package com.github.terminatornl.tiquality.profiling.standalone;
 
+import com.github.terminatornl.tiquality.interfaces.Tracker;
 import com.github.terminatornl.tiquality.profiling.AnalyzedComponent;
 import com.github.terminatornl.tiquality.profiling.TickLogger;
 import com.github.terminatornl.tiquality.profiling.TickTime;
@@ -13,6 +14,7 @@ import static com.github.terminatornl.tiquality.util.Utils.TWO_DECIMAL_FORMATTER
 
 public class SA_ProfileReport  {
 
+    private final Tracker tracker;
     private final long startTimeNanos;
     private final long endTimeNanos;
     private final TreeSet<AnalyzedComponent> analyzedComponents = new TreeSet<>();
@@ -25,7 +27,9 @@ public class SA_ProfileReport  {
     private long totalNanosUsed = 0L;
     private NavigableSet<Map.Entry<String, ITickTime>> classTimesSorted = null;
 
-    public SA_ProfileReport(long startTimeNanos, long endTimeNanos, TickLogger logger, Collection<AnalyzedComponent> analyzedComponents) {
+    public SA_ProfileReport(Tracker tracker, long startTimeNanos, long endTimeNanos, TickLogger logger, Collection<AnalyzedComponent> analyzedComponents) {
+        this.tracker = tracker;
+
         long totalTimeNanos = endTimeNanos - startTimeNanos;
         this.startTimeNanos = startTimeNanos;
         this.endTimeNanos = endTimeNanos;
@@ -55,6 +59,10 @@ public class SA_ProfileReport  {
                 time.add(component.getTimes());
             }
         }
+    }
+
+    public Tracker getTracker() {
+        return tracker;
     }
 
     public double getServerTPS() {

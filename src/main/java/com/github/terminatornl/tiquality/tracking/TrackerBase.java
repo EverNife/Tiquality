@@ -131,6 +131,21 @@ public abstract class TrackerBase implements Tracker {
         });
     }
 
+    @Override
+    public void stopProfilerNow() {
+        SynchronizedAction.run(new SynchronizedAction.Action<Boolean>() {
+            @Override
+            public void run(SynchronizedAction.DynamicVar<Boolean> variable) {
+                if (isProfiling == true) {
+                    isProfiling = false;
+                    TrackerBase.this.key = null;
+                    variable.set(true);
+                    tickLogger = new TickLogger();
+                }
+            }
+        });
+    }
+
     /**
      * Resets every tick with a granted number of tick time set by Tiquality
      * Is initialized with time for a full tick. (Loading blocks mid-tick, or something like that)

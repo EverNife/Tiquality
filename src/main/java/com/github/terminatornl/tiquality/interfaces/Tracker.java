@@ -70,6 +70,14 @@ public interface Tracker {
     TickLogger stopProfiler(ProfilingKey key) throws TiqualityException.TrackerWasNotProfilingException, TiqualityException.InvalidKeyException;
 
     /**
+     * Force the profiler to stop profiling.
+     *
+     */
+    default void stopProfilerNow() {
+        //TODO make this to each one of trackers rather than using default
+    }
+
+    /**
      * Gets the current TickLogger. Will throw an exception if access was attempted when the tracker wasn't profiling
      *
      * @return the TickLogger.

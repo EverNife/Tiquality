@@ -17,11 +17,16 @@ public class SA_SilentProfiler implements Runnable {
     private long startTimeNanos;
     private ProfilingKey key;
     private ProfilePrinter printer;
+    private boolean isProfiling;
 
     public SA_SilentProfiler(Tracker tracker, long durationInMs, ProfilePrinter printer) {
         this.tracker = tracker;
         this.durationInMs = durationInMs;
         this.printer = printer;
+    }
+
+    public boolean isProfiling() {
+        return isProfiling;
     }
 
     public static SortedSet<AnalyzedComponent> analyzeComponents(TickLogger logger, ProfilePrinter printer) throws InterruptedException {
@@ -63,6 +68,7 @@ public class SA_SilentProfiler implements Runnable {
 
     @Override
     public void run() {
+        isProfiling = true;
         try {
             Thread.sleep(durationInMs);
         } catch (InterruptedException e) {
@@ -88,8 +94,9 @@ public class SA_SilentProfiler implements Runnable {
             return;
         }
 
-        SA_ProfileReport report = new SA_ProfileReport(startTimeNanos, endTimeNanos, logger, components);
+        SA_ProfileReport report = new SA_ProfileReport(tracker, startTimeNanos, endTimeNanos, logger, components);
         printer.onProfileFinish(report);
+        isProfiling = false;
     }
 
     public interface ProfilePrinter  {

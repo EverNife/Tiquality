@@ -95,6 +95,14 @@ public class PlayerTracker extends TrackerBase {
         return list;
     }
 
+    public String getOwnerName(){
+        return profile.getName();
+    }
+
+    public UUID getOwnerUUID(){
+        return profile.getId();
+    }
+
     public boolean switchNotify() {
         notifyUser = notifyUser == false;
         return notifyUser;

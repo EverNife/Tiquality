@@ -17,6 +17,7 @@ public class TPSMonitor {
     private long LAST_TICK = System.nanoTime();
     private long[] buffer = new long[measure_ticks];
     private int currentIndex = 0;
+    private static long TICK_NUMBER = 0;
 
 
     /* When starting the TPS monitor, we assume optimal TPS. */
@@ -24,11 +25,16 @@ public class TPSMonitor {
         Arrays.fill(buffer, Constants.NS_IN_TICK_LONG);
     }
 
+    public static long getTickNumber(){
+        return TICK_NUMBER;
+    }
+
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public synchronized void onServerTick(TickEvent.ServerTickEvent e) {
         if (e.phase != TickEvent.Phase.START) {
             return;
         }
+        TICK_NUMBER++;
         long now = System.nanoTime();
         buffer[currentIndex] = now - LAST_TICK;
         LAST_TICK = now;
