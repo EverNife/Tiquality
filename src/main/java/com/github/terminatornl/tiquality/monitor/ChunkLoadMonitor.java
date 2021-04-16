@@ -15,7 +15,7 @@ import java.io.IOException;
 public class ChunkLoadMonitor {
 
     public static final ChunkLoadMonitor INSTANCE = new ChunkLoadMonitor();
-    public static final String TIQUALITY_VERSION_TAG = "Tiquality2" + (TiqualityConfig.SAVE_VERSION == 0 ? "" : TiqualityConfig.SAVE_VERSION);
+    public static final String TIQUALITY_TAG = "Tiquality";
 
     private ChunkLoadMonitor() {
 
@@ -39,9 +39,14 @@ public class ChunkLoadMonitor {
         }
         PersistentData.ensureDataAvailability(world);
         NBTTagCompound tag = PersistentData.getChunkNBTData(chunk);
-        if (tag != null && tag.hasKey(TIQUALITY_VERSION_TAG)) {
-            NBTTagCompound tiqualityData = tag.getCompoundTag(TIQUALITY_VERSION_TAG);
-            ((TiqualityChunk) event.getChunk()).tiquality_loadNBT(event.getWorld(), tiqualityData);
+        if (tag != null && tag.hasKey(TIQUALITY_TAG)) {
+            NBTTagCompound tiqualityData = tag.getCompoundTag(TIQUALITY_TAG);
+            if (tiqualityData.getInteger("SAVE_VERSION") != TiqualityConfig.SAVE_VERSION){
+                tag.removeTag(TIQUALITY_TAG);
+                chunk.markDirty();
+            }else {
+                ((TiqualityChunk) event.getChunk()).tiquality_loadNBT(event.getWorld(), tiqualityData);
+            }
         }
     }
 
@@ -55,7 +60,7 @@ public class ChunkLoadMonitor {
         NBTTagCompound tiqualityData = ((TiqualityChunk) event.getChunk()).tiquality_getNBT();
         if (tiqualityData != null) {
             NBTTagCompound tag = new NBTTagCompound();
-            tag.setTag(TIQUALITY_VERSION_TAG, tiqualityData);
+            tag.setTag(TIQUALITY_TAG, tiqualityData);
             PersistentData.ensureDataAvailability(world);
             try {
                 PersistentData.saveChunkNBTData(chunk, tag);

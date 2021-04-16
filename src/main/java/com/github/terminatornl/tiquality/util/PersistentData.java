@@ -1,10 +1,12 @@
 package com.github.terminatornl.tiquality.util;
 
 import com.github.terminatornl.tiquality.Tiquality;
+import com.github.terminatornl.tiquality.TiqualityConfig;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+import org.apache.commons.io.FileUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -45,7 +47,19 @@ public enum PersistentData {
             }
             Tiquality.LOGGER.info("Persistent data is inside: " + tiqualityFolder.getCanonicalPath());
             NBTTagCompound read_tag = CompressedStreamTools.read(persistentFile);
+
+            if (read_tag != null && read_tag.getInteger("SAVE_VERSION") != TiqualityConfig.SAVE_VERSION ){
+                Tiquality.LOGGER.info("You are using a different SAVE_VERSION than before!");
+                Tiquality.LOGGER.info("Deleting older version of Persistent data inside: " + tiqualityFolder.getCanonicalPath());
+                if (persistentFile.exists()) persistentFile.delete();
+                if (tiqualityWorldData.exists()) FileUtils.deleteDirectory(tiqualityWorldData);
+                read_tag = null;
+            }
+
             storage = read_tag == null ? new NBTTagCompound() : read_tag;
+            if (!storage.hasKey("SAVE_VERSION")){
+                storage.setInteger("SAVE_VERSION", TiqualityConfig.SAVE_VERSION);
+            }
             save();
         } catch (IOException e) {
             throw new RuntimeException("Unable to read persistent data file.", e);
