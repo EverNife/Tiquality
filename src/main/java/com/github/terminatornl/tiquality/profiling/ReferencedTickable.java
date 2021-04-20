@@ -47,6 +47,8 @@ public class ReferencedTickable {
         int data3;
         int data4;
         int data5;
+        public transient String data6 = null;
+
         public ReferenceId(ByteBuf buf) {
             fromBytes(buf);
         }
@@ -61,6 +63,16 @@ public class ReferencedTickable {
             this.data5 = data5;
         }
 
+        ReferenceId(Type type, int data1, int data2, int data3, int data4, int data5, String data6) {
+            this.type = type;
+            this.data1 = data1;
+            this.data2 = data2;
+            this.data3 = data3;
+            this.data4 = data4;
+            this.data5 = data5;
+            this.data6 = data6;
+        }
+
         public static ReferenceId getId(Reference tickable) {
             if (tickable instanceof BlockReference) {
                 BlockReference reference = (BlockReference) tickable;
@@ -68,6 +80,9 @@ public class ReferencedTickable {
             } else if (tickable instanceof EntityReference) {
                 EntityReference reference = (EntityReference) tickable;
                 return new ReferenceId(Type.ENTITY, reference.dimension, (int) (reference.uuid.getMostSignificantBits() >> 32), (int) reference.uuid.getMostSignificantBits(), (int) (reference.uuid.getLeastSignificantBits() >> 32), (int) reference.uuid.getLeastSignificantBits());
+            } else if (tickable instanceof CustomReference) {
+                CustomReference reference = (CustomReference) tickable;
+                return reference.getId();
             } else {
                 throw new ForgetFulProgrammerException("unidentified class: " + tickable.getClass());
             }
@@ -94,6 +109,8 @@ public class ReferencedTickable {
                     long leastSignificantBits = leastSignificantPart1 | leastSignificantPart2;
 
                     return new EntityReference(data1, new UUID(mostSignificantBits, leastSignificantBits));
+                case CUSTOM:
+                    return new CustomReference(data1, new BlockPos(data2, data3, data4), data6);
                 default:
                     /* Unknown */
                     throw new ForgetFulProgrammerException("unidentified type: " + type);
@@ -152,7 +169,8 @@ public class ReferencedTickable {
 
         public enum Type {
             BLOCK((byte) 0),
-            ENTITY((byte) 1);
+            ENTITY((byte) 1),
+            CUSTOM((byte) 2);
 
             private final byte b;
 
@@ -170,6 +188,10 @@ public class ReferencedTickable {
 
             public boolean isBlock() {
                 return this == BLOCK;
+            }
+
+            public boolean isCustom() {
+                return this == CUSTOM;
             }
         }
     }
@@ -354,6 +376,48 @@ public class ReferencedTickable {
                 return null;
             }
             return entry.getRegistryName();
+        }
+    }
+
+    public static class CustomReference extends Reference {
+
+        private int dimension;
+        private BlockPos pos;
+        private String name;
+
+        public CustomReference(int dimension, BlockPos pos, String name) {
+            this.dimension = dimension;
+            this.pos = pos;
+            this.name = name;
+        }
+
+        @Override
+        public ReferenceId getId() {
+            return new ReferenceId(ReferenceId.Type.CUSTOM, dimension, pos.getX(), pos.getY(), pos.getZ(), 0, name);
+        }
+
+        @Nonnull
+        @Override
+        public ITextComponent getName() {
+            return new TextComponentString(name);
+        }
+
+        @Nullable
+        @Override
+        public Location<Integer, BlockPos> currentPos() {
+            return new Location<>(dimension, pos);
+        }
+
+        @Nonnull
+        @Override
+        public Class getReferencedClass() {
+            return CustomReference.class;
+        }
+
+        @Nullable
+        @Override
+        public ResourceLocation getResourceLocation() {
+            return new ResourceLocation("tiquality","CustomReference");
         }
     }
 
