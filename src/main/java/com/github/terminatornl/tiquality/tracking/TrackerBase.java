@@ -285,21 +285,41 @@ public abstract class TrackerBase implements Tracker {
     /**
      * Ticks the entity with a custom tickFunction, and optionally profiles it
      *
-     * @param tileEntity the Entity to tick
+     * @param simpleTickable the Entity to tick
      * @param runnable the Runnable to be executed
      */
     @Override
-    public void tickRunnable(TiqualitySimpleTickable tileEntity, Runnable runnable) {
+    public void tickRunnable(TiqualitySimpleTickable simpleTickable, Runnable runnable) {
         /* Even if we do not have any more time, on tickRunnable the tick is always forced!*/
         if (isProfiling) {
             long start = System.nanoTime();
             runnable.run();
             long elapsed = System.nanoTime() - start;
-            tickLogger.addNanosAndIncrementCalls(tileEntity.getId(), elapsed);
+            tickLogger.addNanosAndIncrementCalls(simpleTickable.getId(), elapsed);
             consume(elapsed);
         } else {
             long start = System.nanoTime();
             runnable.run();
+            consume(System.nanoTime() - start);
+        }
+    }
+
+    /**
+     * Ticks the entity with a custom tickFunction, and optionally profiles it
+     *
+     * @param simpleTickable the Entity to tick
+     */
+    public void force_tickSimpleTickable(TiqualitySimpleTickable simpleTickable) {
+        /* Either We still have time, or the tile entity is on the forced-tick list. We update the entity.*/
+        if (isProfiling) {
+            long start = System.nanoTime();
+            simpleTickable.tiquality_doUpdateTick();
+            long elapsed = System.nanoTime() - start;
+            tickLogger.addNanosAndIncrementCalls(simpleTickable.getId(), elapsed);
+            consume(elapsed);
+        } else {
+            long start = System.nanoTime();
+            simpleTickable.tiquality_doUpdateTick();
             consume(System.nanoTime() - start);
         }
     }
