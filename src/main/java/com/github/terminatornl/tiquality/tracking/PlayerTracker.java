@@ -32,6 +32,7 @@ public class PlayerTracker extends TrackerBase {
 
     private final GameProfile profile;
     private final Set<Long> sharedTo = new HashSet<>();
+    private final Set<Long> sharedFrom = new HashSet<>();
     private final HashMap<String, ClaimOverrideRequester> pendingRequests = new HashMap<>();
     private boolean notifyUser = true;
     private long nextMessageMillis = 0L;
@@ -178,8 +179,9 @@ public class PlayerTracker extends TrackerBase {
         }
     }
 
-    public void addWallet(TickWallet wallet) {
+    public void addWallet(TickWallet wallet, Long from) {
         this.wallet.addWallet(wallet);
+        this.sharedFrom.add(from);
     }
 
     public TickWallet getWallet() {
@@ -191,6 +193,7 @@ public class PlayerTracker extends TrackerBase {
         super.setNextTickTime(time);
         wallet.clearWallets();
         wallet.setRemainingTime(time);
+        sharedFrom.clear();
     }
 
     @Override
@@ -199,7 +202,7 @@ public class PlayerTracker extends TrackerBase {
         for (Long id : sharedTo) {
             Tracker tracker = TrackerManager.getTrackerByID(id);
             if (tracker instanceof PlayerTracker) {
-                ((PlayerTracker) tracker).addWallet(this.wallet);
+                ((PlayerTracker) tracker).addWallet(this.wallet, this.getHolder().getId());
             }
         }
     }
@@ -327,13 +330,23 @@ public class PlayerTracker extends TrackerBase {
     }
 
     /**
-     * Gets the ids of other Trackers this Tracjer
+     * Gets the ids of other Trackers this Tracker
      * is sharing with
      *
      * @return all shared trackers's ids
      */
     public Set<Long> getSharedTo() {
         return sharedTo;
+    }
+
+    /**
+     * Gets the ids of other Trackers that are
+     * sharing with this Tracker
+     *
+     * @return all sharedFrom trackers's ids
+     */
+    public Set<Long> getSharedFrom() {
+        return sharedFrom;
     }
 
     /**
