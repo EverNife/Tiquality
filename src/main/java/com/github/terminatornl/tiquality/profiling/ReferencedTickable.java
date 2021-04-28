@@ -49,6 +49,9 @@ public class ReferencedTickable {
         int data5;
         public transient String data6 = null;
 
+        public ReferenceId() {
+        }
+
         public ReferenceId(ByteBuf buf) {
             fromBytes(buf);
         }
@@ -222,7 +225,7 @@ public class ReferencedTickable {
         @Nonnull
         @Override
         public ITextComponent getName() {
-            WorldServer world = DimensionManager.getWorld(dimension, true);
+            WorldServer world = DimensionManager.getWorld(dimension);
             if (world == null) {
                 net.minecraftforge.common.DimensionManager.initDimension(dimension);
                 world = net.minecraftforge.common.DimensionManager.getWorld(dimension);
@@ -236,7 +239,7 @@ public class ReferencedTickable {
 
         @Nonnull
         public Class getReferencedClass() {
-            WorldServer world = DimensionManager.getWorld(dimension, true);
+            WorldServer world = DimensionManager.getWorld(dimension);
             if (world == null) {
                 net.minecraftforge.common.DimensionManager.initDimension(dimension);
                 world = net.minecraftforge.common.DimensionManager.getWorld(dimension);
@@ -250,7 +253,7 @@ public class ReferencedTickable {
         @Nullable
         @Override
         public ResourceLocation getResourceLocation() {
-            WorldServer world = DimensionManager.getWorld(dimension, true);
+            WorldServer world = DimensionManager.getWorld(dimension);
             if (world == null) {
                 net.minecraftforge.common.DimensionManager.initDimension(dimension);
                 world = net.minecraftforge.common.DimensionManager.getWorld(dimension);
@@ -293,7 +296,7 @@ public class ReferencedTickable {
         @Nonnull
         @Override
         public ITextComponent getName() {
-            WorldServer world = DimensionManager.getWorld(dimension, true);
+            WorldServer world = DimensionManager.getWorld(dimension);
             if (world == null) {
                 net.minecraftforge.common.DimensionManager.initDimension(dimension);
                 world = net.minecraftforge.common.DimensionManager.getWorld(dimension);
@@ -326,7 +329,7 @@ public class ReferencedTickable {
         @Nullable
         @Override
         public Location<Integer, BlockPos> currentPos() {
-            WorldServer world = DimensionManager.getWorld(dimension, true);
+            WorldServer world = DimensionManager.getWorld(dimension);
             if (world == null) {
                 net.minecraftforge.common.DimensionManager.initDimension(dimension);
                 world = net.minecraftforge.common.DimensionManager.getWorld(dimension);
@@ -341,7 +344,7 @@ public class ReferencedTickable {
         @Nonnull
         @Override
         public Class getReferencedClass() {
-            WorldServer world = DimensionManager.getWorld(dimension, true);
+            WorldServer world = DimensionManager.getWorld(dimension);
             if (world == null) {
                 net.minecraftforge.common.DimensionManager.initDimension(dimension);
                 world = net.minecraftforge.common.DimensionManager.getWorld(dimension);
@@ -359,7 +362,7 @@ public class ReferencedTickable {
         @Nullable
         @Override
         public ResourceLocation getResourceLocation() {
-            WorldServer world = DimensionManager.getWorld(dimension, true);
+            WorldServer world = DimensionManager.getWorld(dimension);
             if (world == null) {
                 net.minecraftforge.common.DimensionManager.initDimension(dimension);
                 world = net.minecraftforge.common.DimensionManager.getWorld(dimension);
