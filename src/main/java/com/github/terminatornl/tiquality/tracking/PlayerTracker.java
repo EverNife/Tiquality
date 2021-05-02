@@ -213,7 +213,7 @@ public class PlayerTracker extends TrackerBase {
      * @param ratio the tracker's speed compared to the server tick time.
      */
     public void notifyFallingBehind(double ratio) {
-        if (notifyUser && System.currentTimeMillis() > nextMessageMillis) {
+        if (TiqualityConfig.DEFAULT_THROTTLE_WARNING_INTERVAL_SECONDS > 1 && notifyUser && System.currentTimeMillis() > nextMessageMillis) {
             nextMessageMillis = System.currentTimeMillis() + (TiqualityConfig.DEFAULT_THROTTLE_WARNING_INTERVAL_SECONDS * 1000);
             Entity e = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityFromUuid(getOwner().getId());
             if (e instanceof EntityPlayer) {
