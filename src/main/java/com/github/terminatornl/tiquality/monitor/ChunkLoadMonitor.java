@@ -41,17 +41,6 @@ public class ChunkLoadMonitor {
         NBTTagCompound tag = PersistentData.getChunkNBTData(chunk);
         if (tag != null && tag.hasKey(TIQUALITY_TAG)) {
             NBTTagCompound tiqualityData = tag.getCompoundTag(TIQUALITY_TAG);
-
-            if (tiqualityData.hasKey("SAVE_VERSION")){
-                if (tiqualityData.getInteger("SAVE_VERSION") != TiqualityConfig.SAVE_VERSION){
-                    tag.removeTag(TIQUALITY_TAG);
-                    chunk.markDirty();
-                    return;
-                }
-            }else {
-                tiqualityData.setInteger("SAVE_VERSION", TiqualityConfig.SAVE_VERSION);
-                chunk.markDirty();
-            }
             ((TiqualityChunk) event.getChunk()).tiquality_loadNBT(event.getWorld(), tiqualityData);
         }
     }
