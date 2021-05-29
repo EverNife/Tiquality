@@ -62,7 +62,7 @@ public class RelativeTPSTracker implements TiqualitySimpleTickable {
             this.tps = trackerTPS;
         }
         double ratio = trackerTPS / worldTPS;
-        if (ratio <= TiqualityConfig.DEFAULT_THROTTLE_WARNING_LEVEL) {
+        if (TiqualityConfig.DEFAULT_THROTTLE_WARNING_LEVEL != 1 && ratio <= TiqualityConfig.DEFAULT_THROTTLE_WARNING_LEVEL) {
             Tracker tracker = this.queue.tracker.get();
             if (tracker != null) {
                 tracker.notifyFallingBehind(ratio);
