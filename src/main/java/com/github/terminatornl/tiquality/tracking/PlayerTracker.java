@@ -37,6 +37,7 @@ public class PlayerTracker extends TrackerBase {
     private boolean notifyUser = true;
     private long nextMessageMillis = 0L;
     private TickWallet wallet = new TickWallet();
+    private boolean stopTracker = false;
 
     /**
      * Required.
@@ -180,6 +181,7 @@ public class PlayerTracker extends TrackerBase {
     }
 
     public void addWallet(TickWallet wallet, Long from) {
+        if (stopTracker) return;
         this.wallet.addWallet(wallet);
         this.sharedFrom.add(from);
     }
@@ -190,6 +192,7 @@ public class PlayerTracker extends TrackerBase {
 
     @Override
     public void setNextTickTime(long time) {
+        if (stopTracker) return;
         super.setNextTickTime(time);
         wallet.clearWallets();
         wallet.setRemainingTime(time);
@@ -415,6 +418,15 @@ public class PlayerTracker extends TrackerBase {
     public boolean equalsSaved(NBTTagCompound tag) {
         UUID ownerUUID = new UUID(tag.getLong("uuidMost"), tag.getLong("uuidLeast"));
         return ownerUUID.equals(getOwner().getId());
+    }
+
+    //Stop this tracker, as if this player has 0 time
+    public void stopTracker(boolean stopTracker) {
+        this.stopTracker = stopTracker;
+    }
+
+    public boolean isTrackerStoped() {
+        return stopTracker;
     }
 
     @SuppressWarnings("IfMayBeConditional") /* Too confusing */
