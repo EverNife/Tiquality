@@ -56,6 +56,16 @@ public class PlayerTracker extends TrackerBase {
         this.profile = profile;
     }
 
+    private long lastIsOnlineCheck = System.currentTimeMillis();
+    private boolean isOnline = false;
+    public boolean isOnline(){
+        if (System.currentTimeMillis() - lastIsOnlineCheck > 5000){ //Refresh every 5 seconds
+            lastIsOnlineCheck = System.currentTimeMillis();
+            isOnline = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(this.getOwnerUUID()) != null;
+        }
+        return isOnline;
+    }
+
     /*
      * Gets the tracker for a player, if no one exists yet, it will create one. Never returns null.
      * @param profile the profile to bind this tracker to the profile MUST contain an UUID!
