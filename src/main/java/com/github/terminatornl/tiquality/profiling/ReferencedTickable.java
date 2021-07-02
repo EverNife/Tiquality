@@ -387,11 +387,13 @@ public class ReferencedTickable {
         private int dimension;
         private BlockPos pos;
         private String name;
+        private ResourceLocation resourceLocation;
 
         public CustomReference(int dimension, BlockPos pos, String name) {
             this.dimension = dimension;
             this.pos = pos;
             this.name = name;
+            this.resourceLocation = new ResourceLocation("customreference",name);
         }
 
         @Override
@@ -420,7 +422,7 @@ public class ReferencedTickable {
         @Nullable
         @Override
         public ResourceLocation getResourceLocation() {
-            return new ResourceLocation("tiquality","CustomReference");
+            return this.resourceLocation;
         }
     }
 
