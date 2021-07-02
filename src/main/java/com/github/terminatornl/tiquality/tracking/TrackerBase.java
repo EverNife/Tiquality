@@ -7,6 +7,7 @@ import com.github.terminatornl.tiquality.interfaces.*;
 import com.github.terminatornl.tiquality.memory.WeakReferencedChunk;
 import com.github.terminatornl.tiquality.memory.WeakReferencedTracker;
 import com.github.terminatornl.tiquality.profiling.ProfilingKey;
+import com.github.terminatornl.tiquality.profiling.ReferencedTickable;
 import com.github.terminatornl.tiquality.profiling.TickLogger;
 import com.github.terminatornl.tiquality.tracking.tickqueue.TickQueue;
 import com.github.terminatornl.tiquality.tracking.update.BlockRandomUpdateHolder;
@@ -320,6 +321,27 @@ public abstract class TrackerBase implements Tracker {
         } else {
             long start = System.nanoTime();
             simpleTickable.tiquality_doUpdateTick();
+            consume(System.nanoTime() - start);
+        }
+    }
+
+
+    /**
+     * Ticks the reference with a custom tickFunction, and optionally profiles it
+     *
+     * @param reference the Entity to tick
+     */
+    public void force_tickSimpleTickable(ReferencedTickable.Reference reference, Runnable runnable) {
+        /* Either We still have time, or the tile entity is on the forced-tick list. We update the entity.*/
+        if (isProfiling) {
+            long start = System.nanoTime();
+            runnable.run();
+            long elapsed = System.nanoTime() - start;
+            tickLogger.addNanosAndIncrementCalls(reference, elapsed);
+            consume(elapsed);
+        } else {
+            long start = System.nanoTime();
+            runnable.run();
             consume(System.nanoTime() - start);
         }
     }
