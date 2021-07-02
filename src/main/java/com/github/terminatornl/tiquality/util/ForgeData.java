@@ -40,10 +40,21 @@ public class ForgeData {
      */
     public static @Nonnull
     GameProfile getGameProfileByUUID(@Nonnull UUID uuid) {
+
+        GameProfile profile;
+
+        if (CUSTOM_GAMEPROFILER_PROVIDER != null) {
+            /*
+             *  We try to let bukkit get it for us.
+             */
+            profile = (GameProfile) CUSTOM_GAMEPROFILER_PROVIDER.provideGameProfile(uuid);
+            if (profile != null) return profile;
+        }
+
         /*
-                This works 99% of the time
+                This works 50% of the time, or even less!
          */
-        GameProfile profile = SERVER.getPlayerProfileCache().getProfileByUUID(uuid);
+        profile = SERVER.getPlayerProfileCache().getProfileByUUID(uuid);
         if (profile != null) {
             return profile;
         }
@@ -53,22 +64,6 @@ public class ForgeData {
          */
         if (WEIRD_GAME_PROFILES.contains(uuid)) {
             return GAME_PROFILE_NOBODY;
-        }
-
-        if (CUSTOM_GAMEPROFILER_PROVIDER != null) {
-            /*
-             *  We try to let bukkit get it for us.
-             */
-            profile = (GameProfile) CUSTOM_GAMEPROFILER_PROVIDER.provideGameProfile(uuid);
-            if (profile != null){
-                try {
-                    SERVER.getPlayerProfileCache().addEntry(profile);
-                }catch (Exception e){
-                    Tiquality.LOGGER.warn("Fail adding GameProfile from: " + profile.toString());
-                    e.printStackTrace();
-                }
-                return profile;
-            }
         }
 
         Tiquality.LOGGER.warn("Player profile was not found in cache!");
