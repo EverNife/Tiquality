@@ -202,11 +202,10 @@ public class PlayerTracker extends TrackerBase {
 
     @Override
     public void setNextTickTime(long time) {
-        if (stopTracker) return;
+        if (stopTracker) time = 0;
         super.setNextTickTime(time);
         wallet.clearWallets();
         wallet.setRemainingTime(time);
-        sharedFrom.clear();
     }
 
     @Override
