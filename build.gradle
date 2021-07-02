@@ -2,20 +2,16 @@ buildscript {
     repositories {
         jcenter()
         maven {
-            name = 'Forge'
-            url = "https://files.minecraftforge.net/maven"
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+        maven {
+            name = "sonatype"
+            url = "https://oss.sonatype.org/content/repositories/snapshots/"
         }
         maven {
             name = 'Sponge'
             url = 'https://repo.spongepowered.org/repository/maven-public/'
-        }
-        maven {
-            name = 'Jitpack.io'
-            url = 'https://jitpack.io'
-        }
-        maven {
-            name = 'Maven'
-            url "https://plugins.gradle.org/m2/"
         }
     }
     dependencies {
@@ -23,195 +19,104 @@ buildscript {
         classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
     }
 }
+
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'idea'
+apply plugin: 'maven'
 
-repositories {
-    maven {
-        name = "Sponge"
-        url = "https://repo.spongepowered.org/maven/"
-    }
-    maven {
-        name = 'bStats'
-        //Updated to new repo for bStats
-        url = 'https://repo.codemc.org/repository/maven-public'
-    }
-    maven {
-        name = "CurseForge"
-        url = "https://minecraft.curseforge.com/api/maven"
-    }
-    maven {
-        name = 'Jitpack.io'
-        url = 'https://jitpack.io'
-    }
-}
-
-ext.GetCommitCount = { ->
-    def stdout = new ByteArrayOutputStream()
-    exec {
-        commandLine 'git', 'rev-list', '--all', '--count'
-        standardOutput = stdout
-    }
-    return stdout.toString().trim()
-}
-
-boolean isFat = hasProperty("isFat")
-boolean installIntoServer = hasProperty("installIntoServer")
-boolean isObfuscated = project.gradle.startParameter.taskNames.contains("build")
-
-String buildType = (isFat ? "FAT" : "THIN")
-String version_file = "./build/last_version.txt"
-String last_file_name = "./build/last_file_name.txt"
-String last_file_path = "./build/last_file_path.txt"
-
-if(project.gradle.startParameter.taskNames.contains("build")) {
-    println("Building: " + buildType)
-    delete version_file
-    delete last_file_name
-    delete last_file_path
-}
-
-String spongeForgeVersion = '1.12.2-2838-7.1.11-RC4007'
-String forgeVersion = '1.12.2-14.23.5.2838'
-
-version = "1.12.2-GAMMA-1.8.1" + "-evernife-V1"
-group = "com.github.terminatornl"
-archivesBaseName = "Tiquality-"+ (isObfuscated ? "" : "DEOBF-") + buildType
-
-sourceCompatibility = targetCompatibility = '1.8'
-compileJava {
-    sourceCompatibility = targetCompatibility = "1.8"
-
-
-    options.fork = true
-    options.forkOptions.executable = 'javac'
-    options.compilerArgs << "-XDignore.symbol.file"
-    options.encoding = 'UTF-8'
-}
-
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-}
+group = 'br.com.finalcraft'
+version = '1.8.2'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+compileJava.options.encoding = 'UTF-8'
 
 minecraft {
-    version = forgeVersion
+    version = "1.12.2-14.23.4.2705"
     runDir = "run"
-    mappings = "snapshot_20180808"
-    replaceIn "Tiquality.java"
-    replace '${version}', buildType + "-" + project.version
-    replaceIn "mixinhelper/MixinConfigPlugin.java"
-    replace '${spongeforge_version}', spongeForgeVersion
-    replaceIn "mixinhelper/MixinConfigPlugin.java"
-    replace '${forge_version}', forgeVersion
+
+    mappings = "stable_39"
+    makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
 configurations {
-    embed
-    compile.extendsFrom(embed)
-    compileOnly.transitive = false
+    shade
+    compile.extendsFrom shade
+}
+
+repositories {
+    maven {
+        name = 'spongepowered-repo'
+        url = 'https://repo.spongepowered.org/maven/'
+    }
+    mavenCentral()
 }
 
 dependencies {
-    /*
-        Sponge
-     */
-    compile ('org.spongepowered:spongeforge:' + spongeForgeVersion + ':dev'){
-        transitive = true
+    shade("org.spongepowered:mixin:0.8.1-SNAPSHOT") {
+        exclude module: "launchwrapper"
+        exclude module: 'guava'
     }
-
-    /*
-        GriefPrevention
-        Run configuration requires: -Dbstats.relocatecheck="false" in VM options.
-        Caused by module: bstats-sponge
-     */
-    //TODO: Wait for GriefPrevention to update to the latest Sponge API
-    compileOnly 'me.ryanhamshire:griefprevention:1.12.2-4.3.0.662:original'
-
-    compileOnly 'com.github.bloodmc:GriefDefenderAPI:-SNAPSHOT'
-
-
-    /*
-        FTB Utilities
-     */
-    compileOnly 'ftb-utilities:FTBUtilities:5.3.0.52'
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
-    /*
-        FTB Library
-     */
-    //compileOnly 'ftblib:FTBLib:5.3.0.56'
-
-    if(isFat) {
-        embed('org.spongepowered:mixin:0.8-SNAPSHOT') {
-            ['gson','guava','commons-io','launchwrapper'].each {
-                exclude module: it
-            }
-        }
-    }else{
-        compile ('org.spongepowered:mixin:0.8-SNAPSHOT'){
-            ['gson','guava','commons-io'].each {
-                exclude module: it
-            }
-        }
+    compile ('org.spongepowered:spongeforge:1.12.2-2838-7.1.11-RC4007:dev'){
+        transitive = true
     }
 }
 
 processResources {
-    // this will ensure that this task is redone when the versions change.
-    inputs.property "version", buildType + "-" + project.version
+
+    inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
 
-    // replace stuff
     from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-        include 'mixins.tiquality.json'
-        expand 'version':buildType + "-" + project.version, 'mcversion':project.minecraft.version
+        include "mcmod.info"
+
+        expand "version": project.version, "mcversion": project.minecraft.version
     }
 
-    // copy everything else, thats not the mcmod.info or mixins.tiquality.json
     from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
-        exclude 'mixins.tiquality.json'
+        exclude "mcmod.info"
     }
 
+}
+
+ext {
+    new File(project.buildDir, 'mixins').mkdirs();
+    mixinSrg = new File(project.buildDir, 'mixins/mixins.tiquality.srg')
+    mixinSrg.createNewFile()
+    mixinRefMap = new File(project.buildDir, "mixins/tiquality.refmap.json")
+    mixinRefMap.createNewFile()
 }
 
 jar {
-    from (configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }){
-        /* Embedded mixin */
-        exclude 'META-INF/MANIFEST.MF'
-        exclude 'META-INF/*.SF'
-        exclude 'META-INF/*.DSA'
-        exclude 'META-INF/*.RSA'
-        rename 'LICENSE.txt', 'LICENSE-mixin.txt'
+    from project.mixinRefMap
+
+    manifest {
+        attributes(
+                'FMLCorePluginContainsFMLMod': 'true',
+                'ForceLoadAsMod': 'true',
+                'MixinConfigs': 'mixins.tiquality.json',
+                'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+                'TweakOrder': '0',
+        )
     }
 
-    from ('LICENSE')
-    manifest.attributes(
-            'FMLCorePluginContainsFMLMod': 'true',
-            'ForceLoadAsMod': 'true',
-            'MixinConfigs': 'mixins.tiquality.json',
-            'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
-            'TweakOrder': '0',
-
-    )
-}
-
-/* Convienience script to quickly install Tiquality in an obfuscated environment. */
-
-build.doLast {
-    new File(projectDir, version_file).text = version
-    new File(projectDir, last_file_name).text = jar.archiveName
-    new File(projectDir, last_file_path).text = jar.archivePath
-
-    if(installIntoServer) {
-        delete fileTree('run_server/mods') {
-            include 'Tiquality*'
+    configurations.shade.each { dep ->
+        from(project.zipTree(dep)) {
+            exclude 'META-INF', 'META-INF/**'
         }
-        copy {
-            from jar.archivePath
-            into "run_server/mods"
+        from(project.zipTree(dep)) {
+            include 'META-INF/services', 'META-INF/services/**'
         }
-        println("Replaced Tiquality in 'run_server/mods'")
     }
+
 }
+
+compileJava {
+    options.compilerArgs += [
+            '-Xlint:-processing',
+            "-AoutSrgFile=${project.mixinSrg.canonicalPath}",
+            "-AoutRefMapFile=${project.mixinRefMap.canonicalPath}",
+            "-AreobfSrgFile=${project.file('build/srgs/mcp-srg.srg').canonicalPath}"
+    ]
+}
+
